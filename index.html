@@ -1,58 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>熊谷主要施設マップ|情報システムの構築と応用</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script>
-  <script>
-    function init() {
-      var map = L.map('mapcontainer', { zoomControl: false });
-      var mpoint = [36.1473, 139.3886];
-      map.setView(mpoint, 15);
- 　　 //オープンストリートマップのタイル
-      L.tileLayer('http://tile.openstreetmap.jp/{z}/{x}/{y}.png',
-        {  attribution: "<a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors"
-      }).addTo(map);
-      //ポップアップする文字（HTML可、ここでは画像を表示）
-      var sucontents1 = "立正大学です<br><img src='https://lh3.googleusercontent.com/p/AF1QipPH1_-7dywGwEuyraIKXn3HyTp54BUfcQFb1FAa=s1360-w1360-h1020' width='350' height='262.5'>"
-      var sucontents2 = "熊谷駅<br><img src='https://smyroof.co.jp/wp-content/uploads/image_area_kumagaya.jpg' width='350' height='262.5'>"
-      var sucontents3 = "熊谷市役所<br><img src='https://stat.ameba.jp/user_images/20210912/14/mogmog813a/d0/77/j/o1000066614999910928.jpg?caw=800' width='350' height='262.5'>"
-      var sucontents4 = "熊谷桜堤<br><img src='https://cdn.zekkei-japan.jp/images/spots/a053dbd45a70be095ad4d3cff595ce7f.jpg' width='350' height='262.5'>"
-      var sucontents5 = "熊谷スポーツ文化公園<br><img src='https://www.parks.or.jp/kumagaya/guide/files/804/000804/att_0000002.jpg' width='350' height='262.5'>"
-      var sucontents6 = "妻沼聖天山歓喜院<br><img src='https://annbread.com/wp-content/uploads/2020/12/TKN04932.jpg' width='350' height='262.5'>"
-      var sucontents7 = "星渓園<br><img src='https://imgcache.its-mo.com/contents/KNK_ZPOI/00000000000000183773/000183773-2/000183773-2_m.jpg' width='350' height='262.5'>"
-      var sucontents8 = "能護寺<br><img src='https://www.photo-saitama.jp/wp/wp-content/uploads/2018/03/20150610-09.jpg' width='350' height='262.5'>"
-      //ポップアップオブジェクトを作成
-      var popup1 = L.popup({ maxWidth: 550 }).setContent(sucontents1);
-      var popup2 = L.popup({ maxWidth: 550 }).setContent(sucontents2);
-      var popup3 = L.popup({ maxWidth: 550 }).setContent(sucontents3);
-      var popup4 = L.popup({ maxWidth: 550 }).setContent(sucontents4);
-      var popup5 = L.popup({ maxWidth: 550 }).setContent(sucontents5);
-      var popup6 = L.popup({ maxWidth: 550 }).setContent(sucontents6);
-      var popup7 = L.popup({ maxWidth: 550 }).setContent(sucontents7);
-      var popup8 = L.popup({ maxWidth: 550 }).setContent(sucontents8);
-      //マーカーにポップアップを紐付けする。同時にbindTooltipでツールチップも追加
-      L.marker([36.1084, 139.3621]).bindPopup(popup1).bindTooltip("立正大学").addTo(map);
-      L.marker([36.1395, 139.3899]).bindPopup(popup2).bindTooltip("熊谷駅").addTo(map);
-      L.marker([36.1473, 139.3886]).bindPopup(popup3).bindTooltip("熊谷市役所").addTo(map);
-      L.marker([36.1358, 139.3829]).bindPopup(popup4).bindTooltip("熊谷桜堤").addTo(map);
-      L.marker([36.1638, 139.4110]).bindPopup(popup5).bindTooltip("熊谷スポーツ文化公園").addTo(map);
-      L.marker([36.1341, 139.2229]).bindPopup(popup6).bindTooltip("妻沼聖天山歓喜院").addTo(map);
-      L.marker([36.1445, 139.3812]).bindPopup(popup7).bindTooltip("星渓園").addTo(map);
-      L.marker([36.1352, 139.2020]).bindPopup(popup8).bindTooltip("能護寺").addTo(map);
-       //面の境界線を2次元配列に設定
-      var arealatlons = [[36.1084, 139.3621], [36.1358, 139.3829], [36.1395, 139.3899], [36.1638, 139.4110], [36.1473, 139.3886],
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オンライン自習コード</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 地図の高さを設定 */
+        #map {
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        /* グラフを中央寄せにする */
+        canvas {
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaflet.jsとChart.jsのコード</h1>
+
+    <!-- 地図表示セクション -->
+    <h2>1. 地図の表示 (Leaflet.js)</h2>
+    <div id="map"></div>
+    <script>
+      function init() {
+        // Leaflet.jsを使って地図を初期化
+        var map = L.map('map').setView([36.1473, 139.3886], 12.5); // 地図の中心を熊谷に設定
+ 　　   //オープンストリートマップのタイル
+        L.tileLayer('http://tile.openstreetmap.jp/{z}/{x}/{y}.png',
+          {  attribution: "<a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors"
+        }).addTo(map);
+        //ポップアップする文字（HTML可、ここでは画像を表示）
+        var sucontents1 = "立正大学です<br><img src='https://lh3.googleusercontent.com/p/AF1QipPH1_-7dywGwEuyraIKXn3HyTp54BUfcQFb1FAa=s1360-w1360-h1020' width='350' height='262.5'>"
+        var sucontents2 = "熊谷駅<br><img src='https://smyroof.co.jp/wp-content/uploads/image_area_kumagaya.jpg' width='350' height='262.5'>"
+        var sucontents3 = "熊谷市役所<br><img src='https://stat.ameba.jp/user_images/20210912/14/mogmog813a/d0/77/j/o1000066614999910928.jpg?caw=800' width='350' height='262.5'>"
+        var sucontents4 = "熊谷桜堤<br><img src='https://cdn.zekkei-japan.jp/images/spots/a053dbd45a70be095ad4d3cff595ce7f.jpg' width='350' height='262.5'>"
+        var sucontents5 = "熊谷スポーツ文化公園<br><img src='https://www.parks.or.jp/kumagaya/guide/files/804/000804/att_0000002.jpg' width='350' height='262.5'>"
+        var sucontents6 = "妻沼聖天山歓喜院<br><img src='https://annbread.com/wp-content/uploads/2020/12/TKN04932.jpg' width='350' height='262.5'>"
+        var sucontents7 = "星渓園<br><img src='https://imgcache.its-mo.com/contents/KNK_ZPOI/00000000000000183773/000183773-2/000183773-2_m.jpg' width='350' height='262.5'>"
+        var sucontents8 = "能護寺<br><img src='https://www.photo-saitama.jp/wp/wp-content/uploads/2018/03/20150610-09.jpg' width='350' height='262.5'>"
+        //ポップアップオブジェクトを作成
+        var popup1 = L.popup({ maxWidth: 550 }).setContent(sucontents1);
+        var popup2 = L.popup({ maxWidth: 550 }).setContent(sucontents2);
+        var popup3 = L.popup({ maxWidth: 550 }).setContent(sucontents3);
+        var popup4 = L.popup({ maxWidth: 550 }).setContent(sucontents4);
+        var popup5 = L.popup({ maxWidth: 550 }).setContent(sucontents5);
+        var popup6 = L.popup({ maxWidth: 550 }).setContent(sucontents6);
+        var popup7 = L.popup({ maxWidth: 550 }).setContent(sucontents7);
+        var popup8 = L.popup({ maxWidth: 550 }).setContent(sucontents8);
+        //マーカーにポップアップを紐付けする。同時にbindTooltipでツールチップも追加
+        L.marker([36.1084, 139.3621]).bindPopup(popup1).bindTooltip("立正大学").addTo(map);
+        L.marker([36.1395, 139.3899]).bindPopup(popup2).bindTooltip("熊谷駅").addTo(map);
+        L.marker([36.1473, 139.3886]).bindPopup(popup3).bindTooltip("熊谷市役所").addTo(map);
+        L.marker([36.1358, 139.3829]).bindPopup(popup4).bindTooltip("熊谷桜堤").addTo(map);
+        L.marker([36.1638, 139.4110]).bindPopup(popup5).bindTooltip("熊谷スポーツ文化公園").addTo(map);
+        L.marker([36.1341, 139.2229]).bindPopup(popup6).bindTooltip("妻沼聖天山歓喜院").addTo(map);
+        L.marker([36.1445, 139.3812]).bindPopup(popup7).bindTooltip("星渓園").addTo(map);
+        L.marker([36.1352, 139.2020]).bindPopup(popup8).bindTooltip("能護寺").addTo(map);
+         //面の境界線を2次元配列に設定
+        var arealatlons = [[36.1084, 139.3621], [36.1358, 139.3829], [36.1395, 139.3899], [36.1638, 139.4110], [36.1473, 139.3886],
         [36.1352, 139.2020], [36.1341, 139.2229], [36.1445, 139.3812]];
-      //polygonオブジェクトを作成して地図に追加
-      L.polygon(arealatlons, { color: 'green', weight: 2, fill: true, fillColor: 'green', opacity: 0.5 }).addTo(map);
+        //polygonオブジェクトを作成して地図に追加
+        L.polygon(arealatlons, { color: 'green', weight: 2, fill: true, fillColor: 'green', opacity: 0.5 }).addTo(map);
     }
-  </script>
+    </script>
 </head>
 <body onload="init()">
   <div id="mapcontainer" style="position:absolute;top:0;left:0;right:0;bottom:0;"></div>
+  
+    <!-- グラフ表示セクション -->
+    <h2>2. グラフの表示 (Chart.js)</h2>
+    <!-- 棒グラフ -->
+    <canvas id="barChart" width="400" height="200"></canvas>
+    <!-- 折れ線グラフ -->
+    <canvas id="lineChart" width="400" height="200"></canvas>
+    <!-- 円グラフ -->
+    <canvas id="pieChart" width="400" height="200"></canvas>
 
-  <script>
+    <script>
         // 棒グラフの描画
         var ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
@@ -61,8 +90,8 @@
                 labels: ['A', 'B', 'C'], // x軸のラベル
                 datasets: [{
                     label: 'データ例', // データセットのラベル
-                    data: [1, 2, 4], // 各バーの値
-                    backgroundColor: ['red', 'blue', 'yellow'] // 各バーの色
+                    data: [12, 19, 3], // 各バーの値
+                    backgroundColor: ['pink', 'lightblue', 'lightgreen'] // 各バーの色
                 }]
             }
         });
@@ -76,7 +105,7 @@
                 datasets: [{
                     label: '月間データ', // データセットのラベル
                     data: [5, 10, 15], // 各データ点の値
-                    borderColor: 'blue', // 線の色
+                    borderColor: 'cyan', // 線の色
                     fill: false // 塗りつぶしを無効化
                 }]
             }
@@ -87,10 +116,10 @@
         new Chart(ctxPie, {
             type: 'pie', // グラフの種類を円グラフに指定
             data: {
-                labels: ['Red', 'Blue', 'Yellow'], // セグメントのラベル
+                labels: ['grape', 'orange', 'apple'], // セグメントのラベル
                 datasets: [{
                     data: [300, 50, 100], // 各セグメントの値
-                    backgroundColor: ['red', 'blue', 'yellow'] // 各セグメントの色
+                    backgroundColor: ['plum', 'orange', 'coral'] // 各セグメントの色
                 }]
             }
         });
